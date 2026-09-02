@@ -1,0 +1,6 @@
+{
+  "name": "Daily Creator",
+  "description": "A modern, fast, and responsive daily task formatter and standup generator PWA with offline support.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

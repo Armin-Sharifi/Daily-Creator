@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444" />
+      <stop offset="100%" stop-color="#DC2626" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#1e3a8a" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background Base with Squircle -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Calendar Card -->
+  <g filter="url(#shadow)">
+    <!-- Calendar Body -->
+    <rect x="96" y="112" width="320" height="304" rx="32" fill="#FFFFFF" />
+    
+    <!-- Calendar Header -->
+    <path d="M96 144 C96 126.3 110.3 112 128 112 L384 112 C401.7 112 416 126.3 416 144 L416 188 L96 188 Z" fill="url(#headerGrad)" />
+    
+    <!-- Binder Rings -->
+    <rect x="160" y="88" width="24" height="48" rx="12" fill="#374151" />
+    <rect x="328" y="88" width="24" height="48" rx="12" fill="#374151" />
+    <circle cx="172" cy="112" r="6" fill="#F3F4F6" />
+    <circle cx="340" cy="112" r="6" fill="#F3F4F6" />
+    
+    <!-- Checklist items inside calendar -->
+    <!-- Line 1: Checkbox & bar -->
+    <circle cx="148" cy="240" r="14" fill="#E0E7FF" stroke="#4F46E5" stroke-width="4" />
+    <path d="M142 240 L146 244 L155 235" stroke="#4F46E5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <rect x="178" y="233" width="180" height="14" rx="7" fill="#374151" />
+
+    <!-- Line 2: Checkbox & bar -->
+    <circle cx="148" cy="296" r="14" fill="#E0E7FF" stroke="#4F46E5" stroke-width="4" />
+    <path d="M142 296 L146 300 L155 291" stroke="#4F46E5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <rect x="178" y="289" width="140" height="14" rx="7" fill="#6B7280" />
+
+    <!-- Line 3: Checkbox & bar -->
+    <circle cx="148" cy="352" r="14" fill="#F3F4F6" stroke="#9CA3AF" stroke-width="4" />
+    <rect x="178" y="345" width="160" height="14" rx="7" fill="#9CA3AF" />
+  </g>
+</svg>
