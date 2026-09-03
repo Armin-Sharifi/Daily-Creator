@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
                 Task Journal
               </h1>
               <span className="hidden sm:inline-block text-[9px] uppercase tracking-[0.2em] font-bold opacity-50 px-2 py-0.5 border border-[#D1CFCA] bg-white">
-                PWA // 1.0
+                PWA // 1.1
               </span>
             </div>
             <p className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-40 hidden xs:block">

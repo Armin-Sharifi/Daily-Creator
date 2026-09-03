@@ -5,10 +5,11 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { ABBREVIATED_MONTHS, DAYS_ARRAY, generateDailyText, getDaySuffix } from './utils/dailyLogic';
-import { HistoryItem, ThemeMode } from './types';
+import { HistoryItem, ThemeMode, TimeOutItem } from './types';
 import { Header } from './components/Header';
 import { DateSelector } from './components/DateSelector';
 import { TaskEditor } from './components/TaskEditor';
+import { TimeoutSection } from './components/TimeoutSection';
 import { DailyPreview } from './components/DailyPreview';
 import { HistoryDrawer } from './components/HistoryDrawer';
 import { ShortcutsModal } from './components/ShortcutsModal';
@@ -33,6 +34,32 @@ export default function App() {
 
   const [startTime, setStartTime] = useState<string>('-');
   const [endTime, setEndTime] = useState<string>('-');
+
+  // TimeOuts state (v1.1 feature)
+  const [timeouts, setTimeouts] = useState<TimeOutItem[]>(() => {
+    try {
+      const stored = localStorage.getItem('daily_creator_timeouts');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    // Seed initial example matching user request
+    return [
+      {
+        id: 'init-1',
+        title: 'PowerOutage',
+        startTime: '13:00',
+        endTime: '15:00',
+        duration: '2 hours',
+      },
+    ];
+  });
+
+  const [timeoutEmoji, setTimeoutEmoji] = useState<string>(() => {
+    try {
+      return localStorage.getItem('daily_creator_timeout_emoji') || '⚡';
+    } catch {
+      return '⚡';
+    }
+  });
 
   // Generated output state
   const [dailyText, setDailyText] = useState<string>('');
@@ -60,12 +87,24 @@ export default function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
-  // Persist draft and theme
+  // Persist draft, theme, timeouts, and emoji
   useEffect(() => {
     try {
       localStorage.setItem('daily_creator_draft', tasksRaw);
     } catch {}
   }, [tasksRaw]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('daily_creator_timeouts', JSON.stringify(timeouts));
+    } catch {}
+  }, [timeouts]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('daily_creator_timeout_emoji', timeoutEmoji);
+    } catch {}
+  }, [timeoutEmoji]);
 
   useEffect(() => {
     try {
@@ -96,7 +135,7 @@ export default function App() {
     setDay(tomorrow.getDate());
   }, []);
 
-  // Core generation logic (Exact port of btnCreateText_Click)
+  // Core generation logic
   const handleCreateDaily = useCallback(() => {
     if (!month || !day) {
       setValidationError('Please select a month and day.');
@@ -111,12 +150,14 @@ export default function App() {
       tasksRaw,
       startTime,
       endTime,
+      timeouts,
+      timeoutEmoji,
     });
 
     setDailyText(generated);
 
     // Save to history automatically if there's content
-    const tasksCount = tasksRaw
+    const countTasks = tasksRaw
       .split(/\r?\n/)
       .map((l) => l.trim())
       .filter((l) => l.length > 0).length;
@@ -128,12 +169,15 @@ export default function App() {
       month,
       day,
       year,
-      tasksCount,
+      tasksCount: countTasks,
+      timeoutsCount: timeouts.length,
       content: generated,
+      timeouts: [...timeouts],
+      timeoutEmoji,
     };
 
     setHistory((prev) => [newHistoryItem, ...prev.slice(0, 49)]); // Keep last 50
-  }, [year, month, day, tasksRaw, startTime, endTime]);
+  }, [year, month, day, tasksRaw, startTime, endTime, timeouts, timeoutEmoji]);
 
   // Copy to clipboard (Exact port of btnCopy_Click: Clipboard.SetText(txtDaily.Text);)
   const handleCopyDaily = useCallback(() => {
@@ -151,6 +195,12 @@ export default function App() {
     setDay(item.day);
     setYear(item.year);
     setDailyText(item.content);
+    if (item.timeouts && Array.isArray(item.timeouts)) {
+      setTimeouts(item.timeouts);
+    }
+    if (item.timeoutEmoji) {
+      setTimeoutEmoji(item.timeoutEmoji);
+    }
   };
 
   const handleDeleteHistoryItem = (id: string) => {
@@ -241,9 +291,13 @@ export default function App() {
               day={day}
               tasksRaw={tasksRaw}
               dailyText={dailyText}
+              timeouts={timeouts}
+              timeoutEmoji={timeoutEmoji}
               onMonthChange={setMonth}
               onDayChange={setDay}
               onTasksChange={setTasksRaw}
+              onTimeoutsChange={setTimeouts}
+              onEmojiChange={setTimeoutEmoji}
               onCreateDaily={handleCreateDaily}
               onCopyDaily={handleCopyDaily}
               isCopied={isCopied}
@@ -266,7 +320,7 @@ export default function App() {
 
             {/* Two-Column Responsive Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left Column: Date & Task Editor (6 cols on lg) */}
+              {/* Left Column: Date, Task Editor & Timeouts Section (6 cols on lg) */}
               <div className="lg:col-span-6 xl:col-span-6 space-y-4">
                 <DateSelector
                   month={month}
@@ -288,6 +342,14 @@ export default function App() {
                   onEndTimeChange={setEndTime}
                   onCreateDaily={handleCreateDaily}
                 />
+
+                {/* TimeOuts Section (v1.1) */}
+                <TimeoutSection
+                  timeouts={timeouts}
+                  timeoutEmoji={timeoutEmoji}
+                  onTimeoutsChange={setTimeouts}
+                  onEmojiChange={setTimeoutEmoji}
+                />
               </div>
 
               {/* Right Column: Output & Actions (6 cols on lg) */}
@@ -298,6 +360,7 @@ export default function App() {
                   onCopyDaily={handleCopyDaily}
                   isCopied={isCopied}
                   tasksCount={tasksCount}
+                  timeoutsCount={timeouts.length}
                 />
 
                 {/* Editorial Status Bar & Live Clock */}
@@ -321,7 +384,7 @@ export default function App() {
                 </div>
 
                 <div className="pt-2 flex justify-between items-center text-[10px] uppercase tracking-widest opacity-40">
-                  <span>Legacy Sync Active</span>
+                  <span>Legacy Sync Active · v1.1 TimeOuts</span>
                   <span>.NET FW 4.8 Core</span>
                 </div>
               </div>

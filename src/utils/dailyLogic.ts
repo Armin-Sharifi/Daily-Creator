@@ -67,6 +67,62 @@ export function getDaySuffix(day: number): string {
  *     Environment.NewLine +
  *     tasksBuilder.ToString();
  */
+import { TimeOutItem } from '../types';
+
+/**
+ * Helper to compute duration string like "2 hours", "1 hour", "45 mins", "1 hour 30 mins"
+ */
+export function calculateDuration(startTime: string, endTime: string): string {
+  if (!startTime || !endTime) return '';
+  const s = startTime.trim().toLowerCase();
+  const e = endTime.trim().toLowerCase();
+
+  const parseTime = (timeStr: string): number | null => {
+    const match24 = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+    if (match24) {
+      const h = parseInt(match24[1], 10);
+      const m = parseInt(match24[2], 10);
+      if (h >= 0 && h < 24 && m >= 0 && m < 60) {
+        return h * 60 + m;
+      }
+    }
+    const match12 = timeStr.match(/^(\d{1,2}):(\d{2})\s*(am|pm)$/);
+    if (match12) {
+      let h = parseInt(match12[1], 10);
+      const m = parseInt(match12[2], 10);
+      const period = match12[3];
+      if (period === 'pm' && h < 12) h += 12;
+      if (period === 'am' && h === 12) h = 0;
+      return h * 60 + m;
+    }
+    return null;
+  };
+
+  const startMins = parseTime(s);
+  const endMins = parseTime(e);
+
+  if (startMins === null || endMins === null) return '';
+
+  let diff = endMins - startMins;
+  if (diff < 0) {
+    // Crossed midnight
+    diff += 24 * 60;
+  }
+
+  if (diff === 0) return '0 mins';
+
+  const hours = Math.floor(diff / 60);
+  const mins = diff % 60;
+
+  if (hours > 0 && mins === 0) {
+    return `${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+  }
+  if (hours === 0 && mins > 0) {
+    return `${mins} ${mins === 1 ? 'min' : 'mins'}`;
+  }
+  return `${hours} ${hours === 1 ? 'hour' : 'hours'} ${mins} mins`;
+}
+
 export function generateDailyText({
   year = new Date().getFullYear(),
   month,
@@ -74,6 +130,8 @@ export function generateDailyText({
   tasksRaw,
   startTime = '-',
   endTime = '-',
+  timeouts = [],
+  timeoutEmoji = '⚡',
 }: {
   year?: number;
   month: string;
@@ -81,6 +139,8 @@ export function generateDailyText({
   tasksRaw: string;
   startTime?: string;
   endTime?: string;
+  timeouts?: TimeOutItem[];
+  timeoutEmoji?: string;
 }): string {
   const suffix = getDaySuffix(day);
 
@@ -109,12 +169,35 @@ export function generateDailyText({
   // Windows Environment.NewLine formatting: \r\n or \n
   const tasksSection = validTasks.length > 0 ? validTasks.join('\n') + '\n' : '';
 
-  const daily =
+  let daily =
     `🗓 ${year} - ${month} - ${day}${suffix}\n\n` +
     `⏰ Start time: ${startTime || '-'}\n` +
     `⏰ End time: ${endTime || '-'}\n` +
     `🗒 Today's tasks:\n\n` +
     tasksSection;
+
+  // Format TimeOuts section if any timeouts exist
+  if (timeouts && timeouts.length > 0) {
+    const timeoutLines = timeouts
+      .filter((t) => t.title && t.title.trim().length > 0)
+      .map((t) => {
+        const cleanTitle = t.title.trim();
+        const duration = t.duration || calculateDuration(t.startTime, t.endTime);
+        const durationPart = duration ? ` (${duration})` : '';
+        const timePart =
+          t.startTime && t.endTime
+            ? ` : ${t.startTime.trim()} - ${t.endTime.trim()}`
+            : t.startTime
+            ? ` : ${t.startTime.trim()}`
+            : '';
+        return ` -${cleanTitle}${timePart}${durationPart}`;
+      });
+
+    if (timeoutLines.length > 0) {
+      const emoji = timeoutEmoji?.trim() || '⚡';
+      daily = daily.trimEnd() + `\n\n${emoji}TimeOuts:\n${timeoutLines.join('\n')}\n`;
+    }
+  }
 
   return daily.trimEnd();
 }

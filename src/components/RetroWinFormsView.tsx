@@ -1,14 +1,19 @@
-import React from 'react';
-import { ABBREVIATED_MONTHS, DAYS_ARRAY, getDaySuffix } from '../utils/dailyLogic';
+import React, { useState } from 'react';
+import { ABBREVIATED_MONTHS, DAYS_ARRAY, getDaySuffix, calculateDuration } from '../utils/dailyLogic';
+import { TimeOutItem } from '../types';
 
 interface RetroWinFormsViewProps {
   month: string;
   day: number;
   tasksRaw: string;
   dailyText: string;
+  timeouts: TimeOutItem[];
+  timeoutEmoji: string;
   onMonthChange: (m: string) => void;
   onDayChange: (d: number) => void;
   onTasksChange: (t: string) => void;
+  onTimeoutsChange: (t: TimeOutItem[]) => void;
+  onEmojiChange: (e: string) => void;
   onCreateDaily: () => void;
   onCopyDaily: () => void;
   isCopied: boolean;
@@ -19,13 +24,41 @@ export const RetroWinFormsView: React.FC<RetroWinFormsViewProps> = ({
   day,
   tasksRaw,
   dailyText,
+  timeouts,
+  timeoutEmoji,
   onMonthChange,
   onDayChange,
   onTasksChange,
+  onTimeoutsChange,
+  onEmojiChange,
   onCreateDaily,
   onCopyDaily,
   isCopied,
 }) => {
+  const [newTitle, setNewTitle] = useState('');
+  const [newStart, setNewStart] = useState('13:00');
+  const [newEnd, setNewEnd] = useState('15:00');
+
+  const handleAddTimeout = () => {
+    if (!newTitle.trim()) return;
+    const dur = calculateDuration(newStart, newEnd);
+    onTimeoutsChange([
+      ...timeouts,
+      {
+        id: `${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        title: newTitle.trim(),
+        startTime: newStart.trim(),
+        endTime: newEnd.trim(),
+        duration: dur,
+      },
+    ]);
+    setNewTitle('');
+  };
+
+  const handleRemoveTimeout = (id: string) => {
+    onTimeoutsChange(timeouts.filter((t) => t.id !== id));
+  };
+
   return (
     <div className="w-full max-w-[420px] mx-auto font-['Tahoma',sans-serif] text-[12px] bg-[#f0f0f0] text-black border-2 border-[#0055ea] rounded-t-lg shadow-2xl overflow-hidden select-none">
       {/* Windows 7 Aero Style Titlebar */}
@@ -34,7 +67,7 @@ export const RetroWinFormsView: React.FC<RetroWinFormsViewProps> = ({
           <div className="w-4 h-4 bg-gradient-to-tr from-blue-700 to-cyan-400 rounded-xs flex items-center justify-center text-[10px] text-white font-bold">
             🗓
           </div>
-          <span className="font-semibold text-[#1e395b] text-[12px]">Daily Creator V1</span>
+          <span className="font-semibold text-[#1e395b] text-[12px]">Daily Creator V1.1</span>
         </div>
 
         {/* Win Window Buttons */}
@@ -98,10 +131,95 @@ export const RetroWinFormsView: React.FC<RetroWinFormsViewProps> = ({
             id="retro-tasks"
             value={tasksRaw}
             onChange={(e) => onTasksChange(e.target.value)}
-            rows={5}
+            rows={4}
             className="w-full bg-white border border-[#7f9db9] p-1.5 text-[12px] font-sans text-black focus:outline-none resize-none leading-tight"
           />
         </div>
+
+        {/* TimeOuts GroupBox (v1.1) */}
+        <fieldset className="border border-[#d0d0d0] rounded-xs p-2.5 pt-1 bg-[#f4f4f4] space-y-2">
+          <legend className="px-1 text-[11px] text-[#333] font-normal">
+            TimeOuts (v1.1)
+          </legend>
+
+          <div className="flex items-center gap-1 text-[11px]">
+            <label htmlFor="retro-emoji" className="shrink-0 text-[#222]">Emoji:</label>
+            <input
+              id="retro-emoji"
+              type="text"
+              value={timeoutEmoji}
+              onChange={(e) => onEmojiChange(e.target.value)}
+              className="w-10 bg-white border border-[#7f9db9] px-1 py-0.5 text-center text-[12px]"
+            />
+            <div className="flex gap-1 ml-1">
+              {['⚡', '⏸️', '☕', '🔌'].map((em) => (
+                <button
+                  key={em}
+                  type="button"
+                  onClick={() => onEmojiChange(em)}
+                  className="px-1 border border-[#ccc] bg-white text-[10px]"
+                >
+                  {em}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-1.5 items-center">
+            <input
+              type="text"
+              placeholder="Title (e.g. PowerOutage)"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="flex-1 bg-white border border-[#7f9db9] px-1.5 py-0.5 text-[11px]"
+            />
+            <input
+              type="text"
+              placeholder="13:00"
+              value={newStart}
+              onChange={(e) => setNewStart(e.target.value)}
+              className="w-14 bg-white border border-[#7f9db9] px-1 py-0.5 text-center text-[11px]"
+            />
+            <span className="text-[10px]">-</span>
+            <input
+              type="text"
+              placeholder="15:00"
+              value={newEnd}
+              onChange={(e) => setNewEnd(e.target.value)}
+              className="w-14 bg-white border border-[#7f9db9] px-1 py-0.5 text-center text-[11px]"
+            />
+            <button
+              type="button"
+              onClick={handleAddTimeout}
+              className="px-2 py-0.5 bg-gradient-to-b from-[#f2f2f2] to-[#ebebeb] border border-[#707070] text-[11px] cursor-pointer"
+            >
+              + Add
+            </button>
+          </div>
+
+          {timeouts.length > 0 && (
+            <div className="space-y-1 max-h-24 overflow-y-auto pt-1">
+              {timeouts.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between bg-white border border-[#e0e0e0] px-1.5 py-0.5 text-[11px]"
+                >
+                  <span className="truncate">
+                    {timeoutEmoji} -{item.title} : {item.startTime} - {item.endTime} (
+                    {item.duration || calculateDuration(item.startTime, item.endTime)})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveTimeout(item.id)}
+                    className="text-red-600 font-bold ml-1 text-[10px]"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </fieldset>
 
         {/* Create Daily Button */}
         <button
@@ -136,3 +254,4 @@ export const RetroWinFormsView: React.FC<RetroWinFormsViewProps> = ({
     </div>
   );
 };
+

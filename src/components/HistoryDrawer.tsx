@@ -124,6 +124,7 @@ export const HistoryDrawer: React.FC<HistoryDrawerProps> = ({
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-[9px] uppercase tracking-widest opacity-50 font-bold">
                     {item.tasksCount} {item.tasksCount === 1 ? 'task' : 'tasks'}
+                    {item.timeoutsCount ? ` · ${item.timeoutsCount} timeouts` : ''}
                   </span>
 
                   <div className="flex items-center gap-2">

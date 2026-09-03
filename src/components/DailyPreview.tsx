@@ -8,6 +8,7 @@ interface DailyPreviewProps {
   onCopyDaily: () => void;
   isCopied: boolean;
   tasksCount: number;
+  timeoutsCount?: number;
 }
 
 export const DailyPreview: React.FC<DailyPreviewProps> = ({
@@ -16,6 +17,7 @@ export const DailyPreview: React.FC<DailyPreviewProps> = ({
   onCopyDaily,
   isCopied,
   tasksCount,
+  timeoutsCount = 0,
 }) => {
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
@@ -99,6 +101,8 @@ export const DailyPreview: React.FC<DailyPreviewProps> = ({
             </h2>
             <p className="text-xs opacity-50 font-mono italic tracking-tight mt-1">
               Template: Standard_Daily_Log
+              {tasksCount > 0 && ` · ${tasksCount} ${tasksCount === 1 ? 'task' : 'tasks'}`}
+              {timeoutsCount > 0 && ` · ${timeoutsCount} ${timeoutsCount === 1 ? 'timeout' : 'timeouts'}`}
             </p>
           </div>
 
