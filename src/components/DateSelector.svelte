@@ -23,59 +23,35 @@
 </script>
 
 <section class="card" aria-labelledby="date-heading">
-  <div class="card-head">
-    <h2 id="date-heading">Date</h2>
-    <div class="row">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <h2 id="date-heading" class="card-title"><Icon name="calendar" /> Date</h2>
+    <div class="flex items-center gap-2">
       <button class="btn btn-sm" type="button" onclick={() => app.setToday()}>Today</button>
       <button class="btn btn-sm" type="button" onclick={() => app.setTomorrow()}>Tomorrow</button>
-      <label class="btn btn-sm btn-icon picker" title="Pick a date from the calendar">
-        <Icon name="calendar" />
+      <label class="btn btn-sm btn-icon relative focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand" title="Pick a date from the calendar">
+        <Icon name="calendar" size={14} />
         <span class="sr-only">Pick a date</span>
-        <input type="date" value={nativeValue} onchange={onNativeChange} />
+        <input type="date" value={nativeValue} onchange={onNativeChange} class="absolute inset-0 size-full cursor-pointer opacity-0" />
       </label>
     </div>
   </div>
 
-  <div class="grid">
-    <div class="field">
-      <label for="month-select">Month</label>
+  <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div class="grid gap-1.5">
+      <label class="label" for="month-select">Month</label>
       <select id="month-select" class="input" bind:value={app.month}>
         {#each ABBREVIATED_MONTHS as m (m)}<option value={m}>{m}</option>{/each}
       </select>
     </div>
-    <div class="field">
-      <label for="day-select">Day</label>
+    <div class="grid gap-1.5">
+      <label class="label" for="day-select">Day</label>
       <select id="day-select" class="input" bind:value={app.day}>
         {#each DAYS as d (d)}<option value={d}>{d} ({getDaySuffix(d)})</option>{/each}
       </select>
     </div>
-    <div class="field">
-      <label for="year-input">Year</label>
+    <div class="col-span-2 grid gap-1.5 sm:col-span-1">
+      <label class="label" for="year-input">Year</label>
       <input id="year-input" class="input" type="number" min="1" max="9999" bind:value={app.year} />
     </div>
   </div>
 </section>
-
-<style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-    gap: 0.75rem;
-  }
-  .picker {
-    position: relative;
-    cursor: pointer;
-  }
-  .picker input {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
-  .picker:focus-within {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
-</style>

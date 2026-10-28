@@ -32,24 +32,21 @@
 </script>
 
 <section class="card" aria-labelledby="tasks-heading">
-  <div class="card-head">
-    <h2 id="tasks-heading">
-      <label for="tasks-input">Tasks <span class="hint">(one per line)</span></label>
+  <div class="flex items-center justify-between gap-2">
+    <h2 id="tasks-heading" class="card-title">
+      <Icon name="sort" />
+      <label for="tasks-input" class="cursor-pointer">Tasks <span class="font-normal text-muted">· one per line</span></label>
     </h2>
-    <span class="badge">{app.taskCount} {app.taskCount === 1 ? 'task' : 'tasks'}</span>
+    <span class="chip">{app.taskCount} {app.taskCount === 1 ? 'task' : 'tasks'}</span>
   </div>
 
-  <div class="row">
+  <div class="flex flex-wrap gap-2">
     <button class="btn btn-sm" type="button" onclick={() => (app.tasksRaw = SAMPLE_TASKS.join('\n'))}>
       <Icon name="sparkles" size={14} /> Sample
     </button>
-    <button class="btn btn-sm" type="button" onclick={paste}>
-      <Icon name="paste" size={14} /> Paste
-    </button>
+    <button class="btn btn-sm" type="button" onclick={paste}><Icon name="paste" size={14} /> Paste</button>
     {#if app.taskCount > 1}
-      <button class="btn btn-sm" type="button" onclick={sortAlphabetically}>
-        <Icon name="sort" size={14} /> Sort A–Z
-      </button>
+      <button class="btn btn-sm" type="button" onclick={sortAlphabetically}><Icon name="sort" size={14} /> Sort A–Z</button>
     {/if}
     {#if app.tasksRaw.length > 0}
       <button class="btn btn-sm btn-danger" type="button" onclick={() => (app.tasksRaw = '')}>
@@ -58,62 +55,33 @@
     {/if}
   </div>
   {#if pasteFailed}
-    <p class="error" role="alert">Couldn't read the clipboard. Allow clipboard access or paste with Ctrl/⌘+V.</p>
+    <p class="text-sm text-danger" role="alert">Couldn't read the clipboard. Allow clipboard access or paste with Ctrl/⌘+V.</p>
   {/if}
 
   <textarea
     id="tasks-input"
-    class="input"
+    class="input min-h-44 resize-y leading-relaxed"
     rows="8"
     bind:value={app.tasksRaw}
     placeholder={'Enter tasks, one per line\nMorning stand-up meeting\nDraft project proposal'}
   ></textarea>
 
-  <details>
-    <summary>
-      Start / end time
-      <span class="badge mono">
+  <details class="group rounded-xl bg-surface-2 px-3 py-2.5">
+    <summary class="flex cursor-pointer list-none items-center gap-2 text-sm font-medium">
+      <Icon name="timer" size={14} /> Start / end time
+      <span class="chip ml-auto font-mono">
         {app.startTime === '-' && app.endTime === '-' ? 'default: -' : `${app.startTime} → ${app.endTime}`}
       </span>
     </summary>
-    <div class="times">
-      <div class="field">
-        <label for="start-time">Start time</label>
-        <input id="start-time" class="input mono" type="text" bind:value={app.startTime} placeholder="-" />
+    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="grid gap-1.5">
+        <label class="label" for="start-time">Start time</label>
+        <input id="start-time" class="input font-mono" type="text" bind:value={app.startTime} placeholder="-" />
       </div>
-      <div class="field">
-        <label for="end-time">End time</label>
-        <input id="end-time" class="input mono" type="text" bind:value={app.endTime} placeholder="-" />
+      <div class="grid gap-1.5">
+        <label class="label" for="end-time">End time</label>
+        <input id="end-time" class="input font-mono" type="text" bind:value={app.endTime} placeholder="-" />
       </div>
     </div>
   </details>
 </section>
-
-<style>
-  label {
-    cursor: pointer;
-  }
-  .hint {
-    font-weight: 400;
-    color: var(--muted);
-  }
-  .error {
-    margin: 0;
-    color: var(--danger);
-    font-size: 0.85rem;
-  }
-  summary {
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .times {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
-    gap: 0.75rem;
-    margin-top: 0.75rem;
-  }
-</style>

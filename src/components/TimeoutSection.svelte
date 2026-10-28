@@ -41,68 +41,61 @@
 </script>
 
 <section class="card" aria-labelledby="timeouts-heading">
-  <div class="card-head">
-    <h2 id="timeouts-heading"><Icon name="timer" size={16} /> TimeOuts</h2>
-    <span class="badge">{app.timeouts.length}</span>
+  <div class="flex items-center justify-between gap-2">
+    <h2 id="timeouts-heading" class="card-title"><Icon name="timer" /> TimeOuts</h2>
+    <span class="chip">{app.timeouts.length}</span>
   </div>
 
-  <div class="field">
+  <div class="grid gap-2">
     <span class="label" id="emoji-label">Header emoji</span>
-    <div class="row" role="group" aria-labelledby="emoji-label">
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="emoji-label">
       {#each EMOJIS as emoji (emoji)}
         <button
           type="button"
-          class="emoji"
-          class:active={app.timeoutEmoji === emoji}
+          class="size-9 cursor-pointer rounded-lg border text-base transition-colors {app.timeoutEmoji === emoji
+            ? 'border-brand bg-brand-soft'
+            : 'border-line bg-surface hover:bg-surface-2'}"
           aria-pressed={app.timeoutEmoji === emoji}
           onclick={() => (app.timeoutEmoji = emoji)}
           title={`Use ${emoji} for the TimeOuts header`}>{emoji}</button
         >
       {/each}
-      <input
-        class="input emoji-input"
-        type="text"
-        maxlength="4"
-        bind:value={app.timeoutEmoji}
-        placeholder="⚡"
-        aria-label="Custom header emoji"
-      />
-      <span class="preview mono">{app.timeoutEmoji.trim() || '⚡'}TimeOuts:</span>
+      <input class="input w-16 text-center" type="text" maxlength="4" bind:value={app.timeoutEmoji} placeholder="⚡" aria-label="Custom header emoji" />
+      <span class="font-mono text-xs text-muted">{app.timeoutEmoji.trim() || '⚡'}TimeOuts:</span>
     </div>
   </div>
 
-  <div class="field">
+  <div class="grid gap-2">
     <span class="label" id="presets-label">Quick presets</span>
-    <div class="row" role="group" aria-labelledby="presets-label">
+    <div class="flex flex-wrap gap-2" role="group" aria-labelledby="presets-label">
       {#each PRESETS as p (p.title)}
         <button type="button" class="btn btn-sm" onclick={() => applyPreset(p)}>
-          {p.emoji} {p.title} <span class="muted mono">{p.start}–{p.end}</span>
+          {p.emoji} {p.title} <span class="font-mono text-muted">{p.start}–{p.end}</span>
         </button>
       {/each}
     </div>
   </div>
 
-  <form onsubmit={add} class="form">
-    <div class="form-grid">
-      <div class="field title">
-        <label for="to-title">Title / reason</label>
+  <form onsubmit={add} class="grid gap-3 rounded-xl bg-surface-2 p-3 sm:p-4">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="col-span-2 grid gap-1.5">
+        <label class="label" for="to-title">Title / reason</label>
         <input id="to-title" class="input" type="text" bind:value={title} placeholder="e.g. PowerOutage" required />
       </div>
-      <div class="field">
-        <label for="to-start">Start</label>
-        <input id="to-start" class="input mono" type="time" bind:value={startTime} />
+      <div class="grid gap-1.5">
+        <label class="label" for="to-start">Start</label>
+        <input id="to-start" class="input font-mono" type="time" bind:value={startTime} />
       </div>
-      <div class="field">
-        <label for="to-end">End</label>
-        <input id="to-end" class="input mono" type="time" bind:value={endTime} />
+      <div class="grid gap-1.5">
+        <label class="label" for="to-end">End</label>
+        <input id="to-end" class="input font-mono" type="time" bind:value={endTime} />
       </div>
     </div>
-    <div class="row between">
-      <div class="row">
-        <span class="label">Duration</span>
-        <span class="badge mono">{activeDuration || '0 mins'}</span>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <span class="chip font-mono">{activeDuration || '0 mins'}</span>
         <input
-          class="input override"
+          class="input min-h-8 max-w-52 flex-1 py-1 text-xs"
           type="text"
           bind:value={customDuration}
           placeholder="Override duration…"
@@ -110,14 +103,14 @@
           title="Leave empty to use the calculated duration"
         />
       </div>
-      <button class="btn btn-primary" type="submit" disabled={!title.trim()}>
+      <button class="btn btn-primary w-full sm:w-auto" type="submit" disabled={!title.trim()}>
         <Icon name="plus" /> Add TimeOut
       </button>
     </div>
   </form>
 
-  <div class="row between">
-    <span class="label">Active TimeOuts ({app.timeouts.length})</span>
+  <div class="flex items-center justify-between gap-2">
+    <span class="label">Active ({app.timeouts.length})</span>
     {#if app.timeouts.length > 0}
       <button class="btn btn-sm btn-danger" type="button" onclick={() => (app.timeouts = [])}>
         <Icon name="trash" size={14} /> Clear all
@@ -126,14 +119,16 @@
   </div>
 
   {#if app.timeouts.length === 0}
-    <p class="empty">No TimeOuts yet. Add an outage or break above to include it in the daily text.</p>
+    <p class="rounded-xl border border-dashed border-line p-4 text-center text-sm text-muted">
+      No TimeOuts yet. Add an outage or break above to include it in the daily text.
+    </p>
   {:else}
-    <ul class="list">
+    <ul class="grid gap-2">
       {#each app.timeouts as item (item.id)}
-        <li>
-          <span class="mono line">{formatTimeoutLine(item).trimStart()}</span>
+        <li class="flex items-center justify-between gap-2 rounded-xl border border-line py-1.5 pr-1.5 pl-3">
+          <span class="font-mono text-sm break-words">{formatTimeoutLine(item).trimStart()}</span>
           <button
-            class="btn btn-sm btn-icon btn-danger"
+            class="btn btn-sm btn-icon btn-danger shrink-0"
             type="button"
             aria-label={`Remove ${item.title}`}
             onclick={() => (app.timeouts = app.timeouts.filter((t) => t.id !== item.id))}
@@ -145,86 +140,3 @@
     </ul>
   {/if}
 </section>
-
-<style>
-  .muted {
-    color: var(--muted);
-    font-size: 0.75rem;
-  }
-  .between {
-    justify-content: space-between;
-  }
-  .emoji {
-    width: 2.1rem;
-    height: 2.1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    cursor: pointer;
-  }
-  .emoji.active {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-  }
-  .emoji-input {
-    width: 4.5rem;
-    text-align: center;
-  }
-  .preview {
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-  .form {
-    display: grid;
-    gap: 0.75rem;
-    padding: 0.9rem;
-    background: var(--surface-2);
-    border-radius: 10px;
-  }
-  .form-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 0.75rem;
-  }
-  .override {
-    width: 11rem;
-    min-height: 2rem;
-  }
-  .empty {
-    margin: 0;
-    padding: 0.9rem;
-    text-align: center;
-    color: var(--muted);
-    border: 1px dashed var(--border);
-    border-radius: 10px;
-    font-size: 0.9rem;
-  }
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.4rem;
-  }
-  li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    padding: 0.4rem 0.4rem 0.4rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-  }
-  .line {
-    font-size: 0.85rem;
-    overflow-wrap: anywhere;
-  }
-  @media (max-width: 36rem) {
-    .form-grid {
-      grid-template-columns: 1fr 1fr;
-    }
-    .title {
-      grid-column: 1 / -1;
-    }
-  }
-</style>

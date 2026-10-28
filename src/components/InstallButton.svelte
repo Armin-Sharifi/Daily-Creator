@@ -54,15 +54,15 @@
 
 {#if !installed}
   {#if deferredPrompt}
-    <button class="btn btn-primary" type="button" onclick={install} disabled={installing} title="Install app to your device">
-      <Icon name="download" /> {installing ? 'Installing…' : 'Install'}
+    <button class="btn btn-primary px-3" type="button" onclick={install} disabled={installing} title="Install app to your device" aria-label="Install app">
+      <Icon name="download" /><span class="hidden sm:inline">{installing ? 'Installing…' : 'Install'}</span>
     </button>
   {:else if isIOS}
-    <button class="btn" type="button" onclick={() => (iosGuideOpen = true)}>
-      <Icon name="download" /> Install on iOS
+    <button class="btn px-3" type="button" onclick={() => (iosGuideOpen = true)} aria-label="Install on iOS">
+      <Icon name="download" /><span class="hidden sm:inline">Install</span>
     </button>
     <Dialog bind:open={iosGuideOpen} title="Install on iOS">
-      <ol>
+      <ol class="grid list-decimal gap-2 pl-5 text-sm">
         <li>Tap the <strong>Share</strong> button in Safari.</li>
         <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
       </ol>
@@ -70,12 +70,3 @@
     </Dialog>
   {/if}
 {/if}
-
-<style>
-  ol {
-    margin: 0;
-    padding-left: 1.2rem;
-    display: grid;
-    gap: 0.5rem;
-  }
-</style>

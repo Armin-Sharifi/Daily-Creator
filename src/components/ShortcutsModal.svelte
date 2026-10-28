@@ -12,27 +12,13 @@
 
 <Dialog bind:open title="Keyboard shortcuts">
   {#each shortcuts as s (s.description)}
-    <div class="shortcut">
+    <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-surface-2 px-3 py-2.5 text-sm">
       <span>{s.description}</span>
-      <span class="keys">{#each s.keys as k (k)}<kbd>{k}</kbd>{/each}</span>
+      <span class="flex gap-1">
+        {#each s.keys as k (k)}
+          <kbd class="rounded-md border border-b-2 border-line bg-surface px-1.5 py-0.5 font-mono text-xs">{k}</kbd>
+        {/each}
+      </span>
     </div>
   {/each}
 </Dialog>
-
-<style>
-  .shortcut {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 0.75rem;
-    background: var(--surface-2);
-    border-radius: 8px;
-    font-size: 0.9rem;
-  }
-  .keys {
-    display: flex;
-    gap: 0.25rem;
-    flex-shrink: 0;
-  }
-</style>

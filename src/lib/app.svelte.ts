@@ -15,8 +15,10 @@ export function newId(): string {
 }
 
 function loadTheme(): ThemeMode {
-  const stored = readString(STORAGE_KEYS.theme, 'dark');
-  return stored === 'light' || stored === 'retro-winforms' ? stored : 'dark';
+  const stored = readString(STORAGE_KEYS.theme, '');
+  if (stored === 'light') return 'light';
+  if (stored === 'dark' || stored === 'retro-winforms') return 'dark';
+  return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 
 /** Single source of truth for the form, generated output, history and theme. */

@@ -17,26 +17,10 @@
 </script>
 
 {#if !online}
-  <div class="offline" role="status">
-    <Icon name="wifiOff" /> Offline mode — all features still work
+  <div
+    role="status"
+    class="fixed bottom-20 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-surface px-4 py-2 text-sm shadow-lg lg:right-6 lg:bottom-6 lg:left-auto lg:translate-x-0"
+  >
+    <Icon name="wifiOff" /> Offline — all features still work
   </div>
 {/if}
-
-<style>
-  .offline {
-    position: fixed;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 30;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.9rem;
-    border-radius: 999px;
-    background: var(--warn-bg);
-    color: var(--warn-text);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    font-size: 0.85rem;
-  }
-</style>

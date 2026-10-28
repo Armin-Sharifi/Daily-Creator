@@ -1,6 +1,6 @@
 # Daily Creator
 
-Generates a formatted daily message / standup report. Svelte 5 + TypeScript + Vite, installable as an offline-capable PWA. Everything runs in the browser; there is no backend.
+Generates a formatted daily message / standup report. Svelte 5 + TypeScript + Tailwind CSS 4 + Vite, installable as an offline-capable PWA. Everything runs in the browser; there is no backend.
 
 ## Run
 

@@ -31,4 +31,4 @@ export interface HistoryItem {
   timeoutEmoji?: string;
 }
 
-export type ThemeMode = 'light' | 'dark' | 'retro-winforms';
+export type ThemeMode = 'light' | 'dark';
