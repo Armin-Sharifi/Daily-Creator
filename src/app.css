@@ -1,0 +1,93 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root {
+  color-scheme: light;
+  --bg: #f4f5f9;
+  --surface: #ffffff;
+  --surface-2: #eef0f6;
+  --line: #e1e4ee;
+  --fg: #151826;
+  --muted: #646b80;
+  --brand: #4f46e5;
+  --brand-fg: #ffffff;
+  --brand-soft: #eceafd;
+  --danger: #d1323c;
+  --ok: #138a4b;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0d0f17;
+  --surface: #161926;
+  --surface-2: #1f2333;
+  --line: #2b3044;
+  --fg: #eceef6;
+  --muted: #9aa1b8;
+  --brand: #8b83ff;
+  --brand-fg: #0d0f17;
+  --brand-soft: #25234a;
+  --danger: #ff7a82;
+  --ok: #4ade80;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-fg: var(--brand-fg);
+  --color-brand-soft: var(--brand-soft);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@layer components {
+  .card {
+    @apply grid gap-4 rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5;
+  }
+  .card-title {
+    @apply flex items-center gap-2 text-base font-semibold;
+  }
+  .label {
+    @apply text-xs font-semibold tracking-wide text-muted uppercase;
+  }
+  .input {
+    @apply min-h-10 w-full min-w-0 rounded-lg border border-line bg-surface px-3 py-2 text-sm transition-colors placeholder:text-muted/70 hover:border-muted/60 focus:border-brand;
+  }
+  .btn {
+    @apply inline-flex min-h-10 cursor-pointer items-center justify-center gap-2 rounded-lg border border-line bg-surface px-3.5 py-2 text-sm font-medium whitespace-nowrap transition-colors hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-surface;
+  }
+  .btn-sm {
+    @apply min-h-8 px-2.5 py-1 text-xs;
+  }
+  .btn-primary {
+    @apply border-brand bg-brand text-brand-fg hover:bg-brand hover:brightness-110 disabled:hover:bg-brand;
+  }
+  .btn-danger {
+    @apply text-danger;
+  }
+  .btn-icon {
+    @apply px-0 min-w-10;
+  }
+  .btn-icon.btn-sm {
+    @apply min-w-8;
+  }
+  .chip {
+    @apply inline-flex items-center rounded-full border border-line bg-surface-2 px-2.5 py-0.5 text-xs text-muted tabular-nums;
+  }
+}

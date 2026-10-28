@@ -6,13 +6,13 @@ export interface TimeOutItem {
   duration?: string;
 }
 
-export interface DailyConfig {
+export interface DailyInput {
   year: number;
   month: string;
   day: number;
   tasksRaw: string;
-  startTime: string;
-  endTime: string;
+  startTime?: string;
+  endTime?: string;
   timeouts?: TimeOutItem[];
   timeoutEmoji?: string;
 }
@@ -31,4 +31,4 @@ export interface HistoryItem {
   timeoutEmoji?: string;
 }
 
-export type ThemeMode = 'dark' | 'light' | 'retro-winforms';
+export type ThemeMode = 'light' | 'dark';
