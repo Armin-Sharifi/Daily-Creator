@@ -11,7 +11,7 @@
 <header class="sticky top-0 z-20 border-b border-line bg-surface/80 backdrop-blur-md">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
     <div class="flex min-w-0 items-center gap-3">
-      <img src="/icon.svg" alt="" width="36" height="36" class="size-9 rounded-xl shadow-sm" />
+      <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" width="36" height="36" class="size-9 rounded-xl shadow-sm" />
       <div class="min-w-0">
         <h1 class="truncate text-lg leading-tight font-bold tracking-tight">Daily Creator</h1>
         <p class="hidden truncate text-xs text-muted sm:block">Daily message &amp; standup generator</p>
